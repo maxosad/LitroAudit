@@ -37,7 +37,7 @@ if one person takes or group of people possession of minter, they could mint tok
 The main component of blurring is that minter can ``mint`` tokens almost for free, just call function.
 Other problem is only minter can ``mint``. if he decides not to issue tokens anymore, then other users will not be able to receive them, i.e. the opportunity to enter the project will be closed, for example, to other investors. customers will miss out on potential benefits
 
-same in ``WrappedNFT.sol`` line 11 ``creator = msg.sender”
+same in ``WrappedNFT.sol`` line 11 ``creator = msg.sender``
 Recommendation
 delete minter 
 make person pay for minting, ``mint`` token to msg.sender address
@@ -347,6 +347,7 @@ then we wrap ``mint``
 if (_value !=0) {
 _mint(_to, _value);
 }	
+```
 16 TYPO_IN_THE_WORD_KECCAK
 Description
 ``Voting`` 31 line
