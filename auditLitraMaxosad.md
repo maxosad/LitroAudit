@@ -113,7 +113,7 @@ add check
 require(block.timestamp < startEpochTime + RATE_REDUCTION_TIME, “not actual startEpochSupply, call updateMiningParamters()”);
 ```
 ####2 OUTDATED_AVAILIABLESUPPLY
-#####Description
+##### Description
 ``LA``  98 lines
 ``startEpochTime`` may be irrelevant. I.e.``_updateMiningParamters()`` has not been called yet in this epoch; we can break the logic of programs that rely on this function
 #####Recommendation
@@ -121,7 +121,7 @@ require(block.timestamp < startEpochTime + RATE_REDUCTION_TIME, “not actual st
 require(block.timestamp < startEpochTime + RATE_REDUCTION_TIME, “not actual startEpochTime, call updateMiningParamters()”);
 ```
 ####3 CURRENT_RATE_IS_NOT_CONSIDERED_CORRECTLY
-#####Description
+##### Description
 ``LA``  131 lines
 In the ``mintableInTimeframe`` function, we go from the end to the beginning and each time we try to restore the previous ``rate``. but we will not be able to do this correctly in principle.
 going forward , we calculated the ``rate`` using the following formula
@@ -151,14 +151,14 @@ This problem is serious I don’t think we can recover old ``rate ``
 #####Recommendation
 therefore, I propose to abandon the passage from the end to the beginning. Choose another one. Calculate the ``rate`` from ``INITIAL_RATE`` to start and go from start to end, accumulating supply and updating the ``rate`` every new epoch
 ###Low
-####1 INCORRECT_ERROR_MESSAGE 
-#####Description
+#### 1 INCORRECT_ERROR_MESSAGE 
+##### Description
 File ``EmergencyAdminManaged.sol``, 23 line 
 Required ``msg.sender`` equal to future ``EmergencyAdmin`` but if not we get error with comment `` “! emergency admin”``. ``EmergencyAdmin`` and ``future Emergency Admin`` is two different person and this comment misleads the user.
 #####Recommendation
 change ``"! emergency admin"`` to ``"! future emergency admin"``
 ####2 DIFFERENT_ERROR_MESSAGE_TO_SIMILAR_SITUATIONS
-#####Description
+##### Description
 File ``EmergencyAdminManaged.sol``, 23 line 
 File ``OwnershipAdminManaged.sol``, 21 line 
 File ``ParameterAdminManaged.sol``, 23 line
@@ -168,7 +168,7 @@ In File ``ParameterAdminManaged.so``l, 23 line replace ``"Access denied!"`` to `
 In File ``OwnershipAdminManaged.sol``, 21 line replace ``"Access denied!"`` to ``“!future ownership admin”``
 it will also make messages more informative
 ####3 POSSIBLE_TO_CHANGE_THE_VALUE_OF_STOPPED_TO_THE_SAME
-#####Description
+##### Description
 File ``Stoppable.sol``, 14 line 
 function ``setStopped`` set stopped to given value. So it could be that ``stopped`` is already true and we call ``setStopped(true)`` value will be set and we will pay gas for that, but nothing real changed
 #####Recommendation
@@ -177,7 +177,7 @@ change this function to flipStopped. It would be same but with
 require(_stopped != stopped, “already this value”);
 ```
 ####4 VARIABLE_TOKEN0_USED_ONE_TIME
-#####Description
+##### Description
 ``FileSimpleBurner.sol``, 34-35 lines
 the variable ``token0`` is used only 1 time after creation. we can replace variable to its value and save gas
 #####Recommendation
@@ -185,7 +185,7 @@ the variable ``token0`` is used only 1 time after creation. we can replace varia
 if(pool.coins(0) == _wnft) {
 ```
 ####5 OPERATIONS_WHOSE_RESULT_CAN_BE_PRECALCULATED
-#####Description
+##### Description
 ``LA.sol``
 10 line
 ```
@@ -235,7 +235,7 @@ Two same constant variable. We wasting gas on assignment and creation Constant i
 replace all ``RATE_REDUCTION_TIME`` to ``YEAR`` and delete 15 line
 
 ####7 STORED_CONSTANT_VARIABLE_WHICH_IS_USED_ONE_TIME_IN_CONSTRUCTOR
-#####Description
+##### Description
 ``LA ``19 line
 variable ``INFLATION_DELAY``  used one time in constructor but we spend gas to save it in storage
 #####Recommendation
@@ -246,14 +246,14 @@ line 30
 constructor(uint inflationDelay) ERC20('Litra Token', 'LA') {
 ```
 ####8 NEW_VARIABLE_EQUAL_TO_CONSTANT_DOESNТT_CHANGING
-#####Description
+##### Description
 ``LA`` 31 line
 variable ``initSupply`` equal to  ``INITIAL_SUPPLY`` and does not change in life, we waste gas to create this variable and to set it value;
 #####Recommendation
 delete line 31
 replace variable  ``initSupply`` to variable ``initialSupply``, witch passed via constructor parameter
 ####9 ASSIGNMENT_CONSTANT_VALUE_TO_VARIABLE_IN_CONSTRUCTOR
-#####Description
+##### Description
 ``LA`` 35-36 lines
 ```
 variable miningEpoch = -1;
@@ -263,7 +263,7 @@ could win in gas
 #####Recommendation
 move assign from constructor to variable declaration
 ####10 ASSIGNMENT_SAME_VALUE
-#####Description
+##### Description
 ``LA`` 53 
      ``startEpochSupply = _startEpochSupply;``
 when ``rate = 0``, ``_startEpochSupply`` does not change, and writing to storage is an expensive operation. We're wasting gas
@@ -271,7 +271,7 @@ when ``rate = 0``, ``_startEpochSupply`` does not change, and writing to storage
 do not assign ``startEpochSupply`` when ``rate = 0``
 move assign else if branch
 ####11 EXTRA_VARIABLE
-#####Description
+##### Description
 ``LA`` 41-42 
      ``_startEpochSupply`` and ``_rate`` could be avoided 
 and we will not waste gas on is’s creation and assignment
@@ -298,7 +298,7 @@ the ``_startEpochTime``  variable is assigned the value of the ``startEpochTime`
 delete lines 65,75
 replace all ``_startEpochTime`` on ``startEpochTime``
 ####13 DELETE_THE_ELSE_BRANCH_AND_TAKE_OUT_THE_GENERAL_CODE
-#####Description
+##### Description
 ``LA``  68-71, 78-81 line 
 either if is executed and we change ``_startEpochTime`` to the current one, or we already had it up-to-date. In any case, the current value will be in ``startEpochTime``. 	We delete else branch codesize could become less so we could save some gas
 #####Recommendation
@@ -311,7 +311,7 @@ delete lines  68-71 write just
 return startEpochTime + RATE_REDUCTION_TIME
 ```
 ####14 AVAILABLESUPPLY_JUST_CALLS_ANOTHER_FUNCTION
-#####Description
+##### Description
 ``LA``  88-89 lines
 we waste gas for call another function. 
 84 line 
@@ -326,7 +326,7 @@ return startEpochSupply + (block.timestamp - startEpochTime) * rate;
 }
 ```
 ####15 TYPO_IN_THE_WORD_PARAMETER
-#####Description
+##### Description
 ``LA``  40 line
 function ``_updateMiningParamters`` the letter e is missing in parameters
 #####Recommendation
@@ -349,7 +349,7 @@ _mint(_to, _value);
 }	
 ```
 ####17 TYPO_IN_THE_WORD_KECCAK
-#####Description
+##### Description
 ``Voting`` 31 line
 ```
 bytes32 public constant DISABLE_VOTE_CREATION = 0x40b01f8b31b51596de2eeab8c325ff77cc3695c1c1875d66ff31176e7148d2a1; //keccack256("DISABLE_VOTE_CREATION")
@@ -359,19 +359,19 @@ bytes32 public constant DISABLE_VOTE_CREATION = 0x40b01f8b31b51596de2eeab8c325ff
 #####Recommendation
 replace`` keccack256`` with keccak256
 ####18 COMPARES_CONSTANTS_WITH_THE_VALUES_THAT_WERE_ASSIGNED_TO_THEM
-#####Description
+##### Description
 ``Voting`` 134 - 140 lines    
  unnecessary superfluous asserts. we're wasting gas
 #####Recommendation
 delete lines 134 - 140
 ####19  MISSING_PARAM_COMMENT_FOR__MINBALANCEUPPERLIMIT
-#####Description
+##### Description
 ``Voting`` after 119 line
  написаны ``param`` комментарии ко всем параметрам кроме ``_minBalanceUpperLimit``
 #####Recommendation
 write ``param`` commet after 119 line for ``_minBalanceUpperLimit`` parameter
 ####20 REDUNDANT_I_J_VALUE
-#####Description
+##### Description
 ``SimpleBurner.sol`` 32,33 line
 variables ``i`` ``j`` take the values 0 and 1 but we created them uint256 it's redundant
 #####Recommendation
@@ -386,13 +386,13 @@ uint8 i;
 uint8 j;
 ```
 ####21 DUPLICATE_CODE
-#####Description
+##### Description
 ``Voting.sol`` 526-528 lines and 540-542 lines
 same checks
 #####Recommendation
 delete one of them
 ####22 REDUNDANT_CHECK
-#####Description
+##### Description
 ``Voting.sol``  526, 530 lines
 line 531 function ``_canExecute`` returns ``false``  when ``vote_.execute``
 line 527 function ``_canExecute`` returns ``false``  when 
@@ -427,7 +427,7 @@ could be move from public to external to save gas
 #####Recommendation
 could be move from public to external to save gas
 ####25 TYPO_IN_THE_WORD_AVAILIABLE
-#####Description
+##### Description
 ``La ``88 line
 ```
 function availiableSupply() external view returns(uint256) {
