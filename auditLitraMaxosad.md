@@ -13,7 +13,7 @@ High     | Bugs that can trigger a contract failure. Further recovery is possibl
 Medium   | Bugs that can break the intended contract logic or expose it to DoS attacks, but do not cause direct loss funds.
 Findings
 
-###Critical
+### Critical
 ####1 UNVERIFIED_TOKEN_ADDRESS
 #####Description
 File ``SimpleBurner.sol``, 26 line 
