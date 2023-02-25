@@ -85,7 +85,7 @@ File ``SimpleBurner.sol``
 ``receiver`` was set in ``constructor`` and there is no functionality to change it. 
 If ``receiver`` by some reason can't get what's being sent to him by ``exchange``  function, then all ``exchange`` calls will revert. So funds will be unburnable.
 
-same in ``WrappedNFT.sol`` line 11 ``creator = msg.sender”
+same in ``WrappedNFT.sol`` line 11 ``creator = msg.sender``
 Recommendation
 add function that could change ``receiver`` 
 4 ASSIGNED_ZERO_TOKEN_ADDRESS
